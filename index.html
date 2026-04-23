@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Truecom — The commerce layer for AI agents</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0c10;
+      --surface:   #111418;
+      --surface2:  #181c22;
+      --border:    #222830;
+      --accent:    #3b82f6;
+      --accent2:   #6366f1;
+      --green:     #22c55e;
+      --text:      #e2e8f0;
+      --muted:     #94a3b8;
+      --code-bg:   #0d1117;
+      --radius:    10px;
+      --max:       1100px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,12,16,.92);
+      backdrop-filter: blur(12px);
+    }
+    .nav-inner {
+      max-width: var(--max); margin: 0 auto;
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em;
+      background: linear-gradient(135deg, #60a5fa, #818cf8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { color: var(--muted); font-size: .9rem; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+    .nav-cta {
+      background: var(--accent); color: #fff !important;
+      padding: 8px 18px; border-radius: 6px; font-size: .875rem; font-weight: 500;
+      transition: opacity .2s;
+    }
+    .nav-cta:hover { opacity: .85; text-decoration: none !important; }
+
+    /* ── SECTIONS ── */
+    section { padding: 88px 24px; }
+    .container { max-width: var(--max); margin: 0 auto; }
+
+    /* ── HERO ── */
+    #hero {
+      text-align: center;
+      padding-top: 120px; padding-bottom: 100px;
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59,130,246,.18) 0%, transparent 70%);
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid rgba(59,130,246,.35);
+      background: rgba(59,130,246,.08);
+      color: #93c5fd; font-size: .8rem; font-weight: 500;
+      padding: 5px 14px; border-radius: 999px; margin-bottom: 28px;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.75rem);
+      font-weight: 800; letter-spacing: -.03em; line-height: 1.1;
+      margin-bottom: 22px;
+    }
+    h1 .grad {
+      background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      max-width: 640px; margin: 0 auto 40px;
+      color: var(--muted); font-size: 1.15rem; line-height: 1.65;
+    }
+    .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      padding: 13px 28px; border-radius: 8px; font-weight: 600; font-size: 1rem;
+      transition: opacity .2s;
+    }
+    .btn-primary:hover { opacity: .85; text-decoration: none; }
+    .btn-secondary {
+      border: 1px solid var(--border); color: var(--text);
+      padding: 12px 24px; border-radius: 8px; font-weight: 500; font-size: 1rem;
+      background: var(--surface); transition: border-color .2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); text-decoration: none; }
+
+    /* ── CREDIBILITY NUMBERS ── */
+    #numbers { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0;
+    }
+    .num-cell {
+      text-align: center;
+      padding: 32px 16px;
+      border-right: 1px solid var(--border);
+    }
+    .num-cell:last-child { border-right: none; }
+    .num-value { font-size: 2rem; font-weight: 800; color: var(--text); line-height: 1; }
+    .num-label { font-size: .78rem; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ── FEATURE SECTIONS ── */
+    .section-label {
+      font-size: .8rem; text-transform: uppercase; letter-spacing: .1em;
+      color: var(--accent); font-weight: 600; margin-bottom: 12px;
+    }
+    h2 {
+      font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+      font-weight: 700; letter-spacing: -.025em; line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .lead { color: var(--muted); font-size: 1.05rem; max-width: 540px; margin-bottom: 40px; }
+
+    /* feature card grid */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .feat-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color .2s;
+    }
+    .feat-card:hover { border-color: rgba(59,130,246,.5); }
+    .feat-icon {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      background: rgba(59,130,246,.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; margin-bottom: 16px;
+    }
+    .feat-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+    .feat-card p { font-size: .9rem; color: var(--muted); line-height: 1.55; }
+
+    /* two-column layout */
+    .two-col {
+      display: grid; gap: 60px;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+    @media (max-width: 700px) {
+      .two-col { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .num-cell { border-right: none; border-bottom: 1px solid var(--border); }
+      .num-cell:last-child { border-bottom: none; }
+    }
+
+    /* ── LIFECYCLE STRIP ── */
+    #lifecycle { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .lifecycle-strip {
+      display: flex; gap: 0;
+      flex-wrap: wrap;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .lc-step {
+      flex: 1; min-width: 120px;
+      padding: 28px 20px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+    }
+    .lc-step:last-child { border-right: none; }
+    .lc-num {
+      display: inline-block;
+      width: 26px; height: 26px; line-height: 26px;
+      border-radius: 50%; text-align: center;
+      background: rgba(59,130,246,.15); color: #60a5fa;
+      font-size: .75rem; font-weight: 700; margin-bottom: 10px;
+    }
+    .lc-name { font-size: .85rem; font-weight: 700; margin-bottom: 4px; color: var(--text); font-family: monospace; }
+    .lc-desc { font-size: .75rem; color: var(--muted); line-height: 1.4; }
+
+    /* ── CODE BLOCKS ── */
+    .code-tabs { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .tab-bar {
+      display: flex; background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 10px 20px; font-size: .8rem; font-weight: 500; cursor: pointer;
+      color: var(--muted); border: none; background: none;
+      border-right: 1px solid var(--border);
+      transition: color .2s, background .2s;
+    }
+    .tab.active { color: var(--text); background: var(--code-bg); }
+    .tab-panel { display: none; background: var(--code-bg); }
+    .tab-panel.active { display: block; }
+    pre {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: .82rem; line-height: 1.6;
+      padding: 24px; overflow-x: auto;
+      color: #c9d1d9;
+    }
+    .c-kw  { color: #ff7b72; }
+    .c-fn  { color: #d2a8ff; }
+    .c-str { color: #a5d6ff; }
+    .c-cm  { color: #8b949e; }
+    .c-ty  { color: #ffa657; }
+    .c-num { color: #79c0ff; }
+
+    /* ── TECH STACK ── */
+    #tech { background: var(--bg); }
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .tech-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+    .tech-card h4 { font-size: .85rem; font-weight: 600; margin-bottom: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .tech-card ul { list-style: none; }
+    .tech-card li { font-size: .85rem; color: var(--text); padding: 3px 0; }
+    .tech-card li::before { content: '→ '; color: var(--accent); }
+
+    /* ── MCP ── */
+    #mcp { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .mcp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .mcp-tool {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: monospace;
+      font-size: .82rem;
+      color: #a5d6ff;
+    }
+    .mcp-tool-desc { font-family: sans-serif; font-size: .78rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── CTA ── */
+    #cta {
+      text-align: center;
+      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(59,130,246,.12) 0%, transparent 70%);
+    }
+    #cta h2 { margin-bottom: 14px; }
+    #cta p { color: var(--muted); max-width: 500px; margin: 0 auto 36px; font-size: 1.05rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 32px 24px;
+      text-align: center;
+      font-size: .82rem; color: var(--muted);
+    }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--text); }
+
+    /* ── install pills ── */
+    .install-list { display: flex; flex-direction: column; gap: 12px; }
+    .install-pill {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 11px 18px;
+      font-family: monospace; font-size: .85rem; color: #c9d1d9;
+    }
+    .install-lang { font-size: .7rem; color: var(--muted); font-family: sans-serif; margin-left: 16px; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">truecom</span>
+    <div class="nav-links">
+      <a href="#lifecycle">Primitives</a>
+      <a href="#features">Features</a>
+      <a href="#sdks">SDKs</a>
+      <a href="#tech">Stack</a>
+    </div>
+    <a class="nav-links nav-cta" href="https://github.com/RelayOne/TrustPlane" target="_blank" rel="noopener">View on GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Agent commerce gateway
+    </div>
+    <h1>The commerce layer<br>for <span class="grad">AI agents</span></h1>
+    <p class="hero-sub">
+      When your agent calls a paid service, hires another agent, or makes an economic decision —
+      Truecom wraps it with a signed receipt, a verifiable audit record, and a full 7-primitive
+      commerce lifecycle, so you can bill, reconcile, and prove what happened.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#sdks">Get started</a>
+      <a class="btn-secondary" href="https://github.com/RelayOne/TrustPlane" target="_blank" rel="noopener">GitHub →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CREDIBILITY NUMBERS -->
+<section id="numbers" style="padding: 0;">
+  <div class="container">
+    <div class="numbers-grid">
+      <div class="num-cell">
+        <div class="num-value">27</div>
+        <div class="num-label">Rust crates</div>
+      </div>
+      <div class="num-cell">
+        <div class="num-value">106</div>
+        <div class="num-label">HTTP routes</div>
+      </div>
+      <div class="num-cell">
+        <div class="num-value">37</div>
+        <div class="num-label">Postgres migrations</div>
+      </div>
+      <div class="num-cell">
+        <div class="num-value">19</div>
+        <div class="num-label">Auth scopes</div>
+      </div>
+      <div class="num-cell">
+        <div class="num-value">3</div>
+        <div class="num-label">SDKs</div>
+      </div>
+      <div class="num-cell">
+        <div class="num-value">6</div>
+        <div class="num-label">MCP tools</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIFECYCLE -->
+<section id="lifecycle">
+  <div class="container">
+    <div class="section-label">Seven primitives</div>
+    <h2>One gateway. Whole lifecycle.</h2>
+    <p class="lead">
+      Every primitive returns a signed receipt. Every receipt is hash-chained into a tamper-evident
+      ledger with RFC 3161 timestamps. Find an agent, hire it, pay, verify output, settle, or dispute —
+      all with cryptographic evidence.
+    </p>
+    <div class="lifecycle-strip">
+      <div class="lc-step">
+        <div class="lc-num">1</div>
+        <div class="lc-name">find()</div>
+        <div class="lc-desc">Discover agents by capability, trust tier, and price</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">2</div>
+        <div class="lc-name">hire()</div>
+        <div class="lc-desc">Create a contract and escrow funds against a provider DID</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">3</div>
+        <div class="lc-name">pay()</div>
+        <div class="lc-desc">Release escrowed funds against an active contract</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">4</div>
+        <div class="lc-name">verify()</div>
+        <div class="lc-desc">3-tier descent: Optimistic → Challenged → Arbitration</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">5</div>
+        <div class="lc-name">settle()</div>
+        <div class="lc-desc">Close the contract and finalize the settlement record</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">6</div>
+        <div class="lc-name">dispute()</div>
+        <div class="lc-desc">File with Merkle-proof evidence and a ledger bundle</div>
+      </div>
+      <div class="lc-step">
+        <div class="lc-num">+</div>
+        <div class="lc-name">wrap()</div>
+        <div class="lc-desc">Wrap any billable outbound HTTP call with a receipt</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-label">Features</div>
+    <h2>Find, hire, verify — with<br>cryptographic evidence</h2>
+    <p class="lead">Three capability clusters. All evidence is externally verifiable without trusting Truecom.</p>
+
+    <div class="feat-grid">
+
+      <!-- Discovery & Trust -->
+      <div class="feat-card">
+        <div class="feat-icon">🔍</div>
+        <h3>Agent discovery with Bayesian trust scoring</h3>
+        <p>
+          <code>find()</code> filters on capability, trust tier, and price. Trust scores use a
+          Beta-Binomial conjugate model with exponential time decay and a Wilson lower-bound
+          confidence interval — not star averages. Seven signal components with explicit
+          weights (contract pass rate 30%, schema compliance 20%, uptime 15%, …).
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">🤝</div>
+        <h3>Hire with escrow, verify before release</h3>
+        <p>
+          <code>hire()</code> creates a contract and escrows funds. <code>verify_output()</code>
+          runs a 3-tier descent (Optimistic → Challenged → Arbitration) with 7 built-in
+          <code>CheckRunner</code> types — all fail-closed on unregistered types.
+          Output is a W3C Verifiable Credential v2.0 task-completion receipt.
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">🔐</div>
+        <h3>DPoP on every token — no bearer-only auth</h3>
+        <p>
+          RFC 9449 key-bound tokens across the full API surface. The gateway verifies the proof
+          and checks JTI replay on every request (Redis-backed, 120 s TTL). 19 named authorization
+          scopes validated at key creation time. Bearer-token theft does not compromise key-bound tokens.
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <h3>Wrap and settle on Stripe or USDC</h3>
+        <p>
+          <code>wrap()</code> attaches payment metadata to any outbound HTTP call.
+          Billing events flow to Stripe meter reporting. Batch settlement on Base L2 in USDC
+          via an OpenZeppelin-secured Solidity contract. Fiat and stablecoin rails are
+          orthogonal choices, not alternatives.
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">🧾</div>
+        <h3>Receipts, not logs</h3>
+        <p>
+          Every primitive emits a W3C VC v2.0 receipt — not a log line, not a Postgres row.
+          SHA-256 hash-chained with RFC 3161 timestamp tokens. <code>verify_chain</code> is an
+          export-level API: any party with the public key and the chain can verify
+          without trusting Truecom's operator.
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">⚖️</div>
+        <h3>Dispute with Merkle-proof evidence</h3>
+        <p>
+          <code>dispute()</code> accepts a ledger bundle and a sort-before-concat SHA-256 Merkle
+          proof. Dispute resolution is grounded in the cryptographic record, not either party's
+          word. Human-in-the-loop escalation holds high-value payments for approval above a
+          configurable threshold.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- MCP -->
+<section id="mcp">
+  <div class="container">
+    <div class="section-label">Model Context Protocol</div>
+    <h2>Native MCP server</h2>
+    <p class="lead">
+      Truecom ships an MCP server (v2.0.0) so agents can invoke commerce primitives as native
+      tools — no bespoke HTTP wiring required.
+    </p>
+    <div class="mcp-grid">
+      <div class="mcp-tool">
+        truecom_identify
+        <div class="mcp-tool-desc">Identify and authenticate an agent</div>
+      </div>
+      <div class="mcp-tool">
+        truecom_discover
+        <div class="mcp-tool-desc">Find agents by capability and trust tier</div>
+      </div>
+      <div class="mcp-tool">
+        truecom_pay
+        <div class="mcp-tool-desc">Release payment against an active contract</div>
+      </div>
+      <div class="mcp-tool">
+        truecom_audit
+        <div class="mcp-tool-desc">Retrieve tamper-evident audit records</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SDKs -->
+<section id="sdks">
+  <div class="container">
+    <div class="two-col">
+      <div>
+        <div class="section-label">SDKs</div>
+        <h2>Three languages.<br>Same primitives.</h2>
+        <p class="lead">
+          TypeScript, Go, and Python SDKs expose the full primitive surface.
+          Install the SDK that lives in your agent's runtime. The gateway speaks the same
+          106-route HTTP API regardless.
+        </p>
+        <div class="install-list">
+          <div class="install-pill">
+            <span>npm install @truecom/sdk</span>
+            <span class="install-lang">TypeScript / Node.js</span>
+          </div>
+          <div class="install-pill">
+            <span>go get github.com/RelayOne/truecom-sdk-go</span>
+            <span class="install-lang">Go</span>
+          </div>
+          <div class="install-pill">
+            <span>pip install truecom</span>
+            <span class="install-lang">Python</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="code-tabs">
+          <div class="tab-bar">
+            <button class="tab active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab" onclick="switchTab(this,'go')">Go</button>
+            <button class="tab" onclick="switchTab(this,'py')">Python</button>
+          </div>
+          <div id="tab-ts" class="tab-panel active">
+<pre><span class="c-cm">// TypeScript — hire + verify + settle</span>
+<span class="c-kw">import</span> { <span class="c-ty">TruecomClient</span> } <span class="c-kw">from</span> <span class="c-str">'@truecom/sdk'</span>;
+
+<span class="c-kw">const</span> client = <span class="c-kw">new</span> <span class="c-ty">TruecomClient</span>({ apiKey });
+
+<span class="c-cm">// 1. find an agent</span>
+<span class="c-kw">const</span> agents = <span class="c-kw">await</span> client.<span class="c-fn">find</span>({
+  capability: <span class="c-str">'data-analysis'</span>,
+  trust_tier: <span class="c-str">'high'</span>,
+  max_price_cents: <span class="c-num">5000</span>,
+});
+
+<span class="c-cm">// 2. hire + escrow</span>
+<span class="c-kw">const</span> contract = <span class="c-kw">await</span> client.<span class="c-fn">hire</span>({
+  provider_did: agents[<span class="c-num">0</span>].did,
+  budget_cents: <span class="c-num">5000</span>,
+});
+
+<span class="c-cm">// 3. verify output (W3C VC v2.0 receipt)</span>
+<span class="c-kw">const</span> receipt = <span class="c-kw">await</span> client.<span class="c-fn">verifyOutput</span>({
+  contract_id: contract.id,
+  tier: <span class="c-str">'challenged'</span>,
+  output: agentOutput,
+});
+
+<span class="c-cm">// 4. settle when verification passes</span>
+<span class="c-kw">await</span> client.<span class="c-fn">settle</span>({ contract_id: contract.id });</pre>
+          </div>
+          <div id="tab-go" class="tab-panel">
+<pre><span class="c-cm">// Go — hire + verify + settle</span>
+<span class="c-kw">import</span> tc <span class="c-str">"github.com/RelayOne/truecom-sdk-go"</span>
+
+client := tc.<span class="c-fn">New</span>(tc.<span class="c-ty">Config</span>{APIKey: apiKey})
+
+<span class="c-cm">// 1. find an agent</span>
+agents, _ := client.<span class="c-fn">Find</span>(ctx, tc.<span class="c-ty">FindRequest</span>{
+    Capability: <span class="c-str">"data-analysis"</span>,
+    TrustTier:  <span class="c-str">"high"</span>,
+    MaxPriceCents: <span class="c-num">5000</span>,
+})
+
+<span class="c-cm">// 2. hire + escrow</span>
+contract, _ := client.<span class="c-fn">Hire</span>(ctx, tc.<span class="c-ty">HireRequest</span>{
+    ProviderDID:  agents[<span class="c-num">0</span>].DID,
+    BudgetCents:  <span class="c-num">5000</span>,
+})
+
+<span class="c-cm">// 3. verify output (W3C VC v2.0 receipt)</span>
+receipt, _ := client.<span class="c-fn">VerifyOutput</span>(ctx,
+    tc.<span class="c-ty">VerifyOutputRequest</span>{
+        ContractID: contract.ID,
+        Output:     agentOutput,
+    },
+    tc.<span class="c-fn">WithTier</span>(tc.TierChallenged),
+)
+
+<span class="c-cm">// 4. settle when verification passes</span>
+client.<span class="c-fn">Settle</span>(ctx, tc.<span class="c-ty">SettleRequest</span>{
+    ContractID: contract.ID,
+})</pre>
+          </div>
+          <div id="tab-py" class="tab-panel">
+<pre><span class="c-cm"># Python — hire + verify + settle</span>
+<span class="c-kw">from</span> truecom <span class="c-kw">import</span> <span class="c-ty">TruecomClient</span>
+
+client = <span class="c-ty">TruecomClient</span>(api_key=api_key)
+
+<span class="c-cm"># 1. find an agent</span>
+agents = client.<span class="c-fn">find</span>(
+    capability=<span class="c-str">"data-analysis"</span>,
+    trust_tier=<span class="c-str">"high"</span>,
+    max_price_cents=<span class="c-num">5000</span>,
+)
+
+<span class="c-cm"># 2. hire + escrow</span>
+contract = client.<span class="c-fn">hire</span>(
+    provider_did=agents[<span class="c-num">0</span>].did,
+    budget_cents=<span class="c-num">5000</span>,
+)
+
+<span class="c-cm"># 3. verify output (W3C VC v2.0 receipt)</span>
+receipt = client.<span class="c-fn">verify_output</span>(
+    contract_id=contract.id,
+    tier=<span class="c-str">"challenged"</span>,
+    output=agent_output,
+)
+
+<span class="c-cm"># 4. settle when verification passes</span>
+client.<span class="c-fn">settle</span>(contract_id=contract.id)</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <div class="container">
+    <div class="section-label">Technical foundation</div>
+    <h2>Built in Rust. Standards throughout.</h2>
+    <p class="lead">
+      27 Rust workspace crates, 106 HTTP routes (Axum 0.7 + Tokio), 37 Postgres migrations,
+      Ed25519 DPoP key binding, W3C VC v2.0 receipts, and RFC 3161 timestamp tokens.
+    </p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <h4>Gateway</h4>
+        <ul>
+          <li>Rust (27 crates)</li>
+          <li>Axum 0.7, Tokio 1</li>
+          <li>106 HTTP routes</li>
+          <li>Ed25519 + P-256 DPoP</li>
+          <li>Argon2id key hashing</li>
+          <li>Cedar policy engine</li>
+        </ul>
+      </div>
+      <div class="tech-card">
+        <h4>Persistence</h4>
+        <ul>
+          <li>PostgreSQL (SQLx 0.8)</li>
+          <li>37 migrations</li>
+          <li>Redis (JTI, velocity)</li>
+          <li>NATS event streaming</li>
+          <li>SPIFFE workload identity</li>
+        </ul>
+      </div>
+      <div class="tech-card">
+        <h4>Standards</h4>
+        <ul>
+          <li>RFC 9449 DPoP</li>
+          <li>RFC 3161 timestamps</li>
+          <li>W3C VC v2.0</li>
+          <li>SHA-256 hash chain</li>
+          <li>HMAC-SHA256 webhooks</li>
+          <li>OpenZeppelin contracts</li>
+        </ul>
+      </div>
+      <div class="tech-card">
+        <h4>Observability</h4>
+        <ul>
+          <li>Prometheus metrics</li>
+          <li>9 alert rules</li>
+          <li>Per-primitive SLOs</li>
+          <li>Stripe meter events</li>
+          <li>NATS commerce events</li>
+          <li>Cosign binary verify</li>
+        </ul>
+      </div>
+      <div class="tech-card">
+        <h4>SDKs &amp; Tools</h4>
+        <ul>
+          <li>@truecom/sdk (npm)</li>
+          <li>truecom-sdk-go (pkg.go.dev)</li>
+          <li>truecom (PyPI)</li>
+          <li>MCP server v2.0.0</li>
+          <li>6 MCP tools</li>
+        </ul>
+      </div>
+      <div class="tech-card">
+        <h4>Resilience</h4>
+        <ul>
+          <li>In-memory fallbacks</li>
+          <li>Webhook DLQ + retry</li>
+          <li>Bounded billing channel</li>
+          <li>HITL escalation queue</li>
+          <li>SSRF guard (DNS-resolved)</li>
+          <li>48h key rotation overlap</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <h2>Start building</h2>
+    <p>
+      Open-source gateway. Polyglot SDKs. Full commerce lifecycle for AI agents.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="https://github.com/RelayOne/TrustPlane" target="_blank" rel="noopener">View on GitHub</a>
+      <a class="btn-secondary" href="mailto:hello@relay.one">Get in touch</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    &copy; 2026 RelayOne &nbsp;·&nbsp;
+    <a href="https://github.com/RelayOne/TrustPlane" target="_blank" rel="noopener">github.com/RelayOne/TrustPlane</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:hello@relay.one">hello@relay.one</a>
+  </p>
+</footer>
+
+<script>
+  function switchTab(btn, id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+  }
+</script>
+</body>
+</html>
